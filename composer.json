@@ -5,21 +5,19 @@
   "keywords": ["real-estate", "crm", "laravel", "nurture"],
   "license": "MIT",
   "require": {
-    "php": "^8.3",
+    "php": "^8.2",
     "laravel/framework": "^11.0",
-    "laravel/tinker": "^2.9",
+    "laravel/tinker": "^2.8",
     "livewire/livewire": "^3.0",
     "google/apiclient": "^2.15",
-    "twilio/sdk": "^9.0",
-    "sendgrid/sendgrid": "^7.12"
+    "twilio/sdk": "^8.0",
+    "sendgrid/sendgrid": "^7.11"
   },
   "require-dev": {
     "laravel/pint": "^1.13",
     "laravel/sail": "^1.26",
     "mockery/mockery": "^1.6",
-    "nunomaduro/collision": "^8.0",
-    "pestphp/pest": "^2.34",
-    "pestphp/pest-plugin-laravel": "^2.34"
+    "nunomaduro/collision": "^8.0"
   },
   "autoload": {
     "psr-4": {
@@ -29,8 +27,8 @@
     }
   },
   "config": {
-    "sort-packages": true
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+    "sort-packages": true,
+    "minimum-stability": "stable",
+    "prefer-stable": true
+  }
 }
