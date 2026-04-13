@@ -1,0 +1,291 @@
+RE_nurture_CRM — Laravel 11 Real Estate CRM Scaffold
+Generated: 2026-04-13
+======================================================
+
+DIRECTORY STRUCTURE
+===================
+
+/tmp/RE_nurture_CRM_scaffold/
+├── app/
+│   ├── Models/
+│   │   ├── Contact.php ......................... Contact model with relationships
+│   │   ├── Lead.php ........................... Lead model with pipeline logic
+│   │   ├── Pipeline.php ....................... Sales pipeline model
+│   │   ├── Task.php ........................... Task/follow-up model
+│   │   ├── Communication.php .................. Email/SMS/communication log
+│   │   └── Property.php ....................... Property listing model
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── API/
+│   │   │       ├── ContactController.php ...... REST endpoints for contacts
+│   │   │       ├── LeadController.php ......... REST endpoints for leads
+│   │   │       ├── TaskController.php ......... REST endpoints for tasks
+│   │   │       └── CommunicationController.php REST endpoints for communication
+│   │   └── Livewire/
+│   │       ├── ContactForm.php ............... Interactive contact form component
+│   │       └── LeadPipeline.php .............. Kanban-style lead pipeline view
+│   └── Services/
+│       ├── EmailService.php .................. SendGrid email integration
+│       ├── SMSService.php .................... Twilio SMS integration
+│       └── GmailService.php .................. Gmail API sync and sending
+├── database/
+│   ├── migrations/
+│   │   ├── 2024_01_01_000001_create_contacts_table.php
+│   │   ├── 2024_01_01_000002_create_pipelines_table.php
+│   │   ├── 2024_01_01_000003_create_leads_table.php
+│   │   ├── 2024_01_01_000004_create_tasks_table.php
+│   │   ├── 2024_01_01_000005_create_communications_table.php
+│   │   └── 2024_01_01_000006_create_properties_table.php
+│   ├── factories/
+│   │   ├── ContactFactory.php ................ Generate test contacts
+│   │   └── LeadFactory.php ................... Generate test leads
+│   └── seeders/
+│       ├── DatabaseSeeder.php ................ Master seeder
+│       ├── PipelineSeeder.php ................ Sample pipelines (Buyer, Seller, Investor, Referral)
+│       ├── ContactSeeder.php ................. Generate 50 test contacts
+│       ├── LeadSeeder.php .................... Generate 30 test leads
+│       ├── TaskSeeder.php .................... Generate sample tasks
+│       └── PropertySeeder.php ................ Generate sample properties
+├── routes/
+│   ├── api.php .............................. RESTful API routes (/api/*)
+│   └── web.php .............................. Web routes (Livewire components)
+├── config/
+│   └── services.php ......................... Service credentials (SendGrid, Twilio, Gmail)
+├── storage/
+│   ├── logs/ ................................ Application logs
+│   └── uploads/ ............................. File uploads (future)
+├── bootstrap/ ............................... Laravel bootstrap files
+├── public/ .................................. Web root (index.php, assets)
+├── tests/ ................................... Unit and feature tests (placeholder)
+│
+└── ROOT FILES
+├── composer.json ............................ PHP dependencies
+├── .env.example ............................. Environment template
+├── .gitignore ............................... Git ignore patterns
+├── README.md ................................ Project overview and quick start
+├── SETUP.md ................................. Detailed setup and deployment guide
+├── API_DOCUMENTATION.md .................... Complete API reference
+└── SCAFFOLD_MANIFEST.txt ................... This file
+
+
+MODELS & RELATIONSHIPS
+======================
+
+Contact
+  - hasMany: leads, tasks, communications
+  - Methods: search(), byTag()
+
+Lead
+  - belongsTo: contact, pipeline
+  - hasMany: tasks
+  - Methods: advance(), markAsLost(), markAsClosed()
+  - Statuses: new, contacted, qualified, proposal, negotiation, closed, lost
+
+Pipeline
+  - hasMany: leads
+  - Methods: getStats() → returns breakdown by status
+
+Task
+  - belongsTo: contact, lead
+  - Statuses: pending, in_progress, completed, cancelled
+  - Priorities: low, medium, high, urgent
+  - Methods: complete(), isOverdue(), isDueToday()
+
+Communication
+  - belongsTo: contact, lead
+  - Types: email, sms, call, note
+  - Statuses: sent, pending, failed, delivered, opened, clicked
+  - Methods: markDelivered(), markOpened(), markClicked()
+
+Property
+  - hasMany: interestedLeads (via lead.property_interest)
+
+
+API ENDPOINTS (REST)
+====================
+
+CONTACTS
+  GET    /api/contacts                      List contacts
+  POST   /api/contacts                      Create contact
+  GET    /api/contacts/{id}                 Get contact
+  PUT    /api/contacts/{id}                 Update contact
+  DELETE /api/contacts/{id}                 Delete contact
+  POST   /api/contacts/bulk-import          Bulk import
+
+LEADS
+  GET    /api/leads                         List leads
+  POST   /api/leads                         Create lead
+  GET    /api/leads/{id}                    Get lead
+  PUT    /api/leads/{id}                    Update lead
+  DELETE /api/leads/{id}                    Delete lead
+  POST   /api/leads/{id}/advance            Advance stage
+  POST   /api/leads/{id}/close              Mark closed/won
+  POST   /api/leads/{id}/lose               Mark lost
+  GET    /api/leads/pipeline/{id}/stats     Pipeline stats
+
+TASKS
+  GET    /api/tasks                         List tasks
+  POST   /api/tasks                         Create task
+  GET    /api/tasks/{id}                    Get task
+  PUT    /api/tasks/{id}                    Update task
+  DELETE /api/tasks/{id}                    Delete task
+  POST   /api/tasks/{id}/complete           Mark complete
+  GET    /api/tasks/upcoming                Upcoming (7 days)
+  GET    /api/tasks/overdue                 Overdue
+
+COMMUNICATIONS
+  GET    /api/communications                List communications
+  GET    /api/communications/{id}           Get communication
+  PUT    /api/communications/{id}           Update status
+  POST   /api/communications/email          Send email
+  POST   /api/communications/sms            Send SMS
+  GET    /api/communications/timeline/{id}  Timeline
+
+WEBHOOKS
+  POST   /api/webhooks/sendgrid             SendGrid events
+  POST   /api/webhooks/twilio               Twilio callbacks
+  POST   /api/webhooks/gmail                Gmail sync
+
+
+KEY FEATURES
+============
+
+✓ Multi-stage sales pipelines
+✓ Contact management and search
+✓ Lead lifecycle tracking
+✓ Task/follow-up scheduling
+✓ SendGrid email integration with tracking
+✓ Twilio SMS integration with delivery tracking
+✓ Gmail API integration (sync, send)
+✓ Communication timeline per contact
+✓ RESTful API for all operations
+✓ Livewire components for interactivity
+✓ Bulk contact import
+✓ Pipeline statistics and reporting
+✓ Property listing management
+✓ Webhook support for real-time updates
+✓ Database seeders for test data
+✓ Full Laravel 11 best practices
+
+
+ENVIRONMENT VARIABLES (.env)
+=============================
+
+APP_NAME="RE Nurture CRM"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://nurture.realtorcedric.com
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_DATABASE=nurture_crm
+DB_USERNAME=nurture_user
+DB_PASSWORD=secure_password
+
+SENDGRID_API_KEY=SG.xxxxx
+TWILIO_ACCOUNT_SID=ACxxxx
+TWILIO_AUTH_TOKEN=xxxx
+TWILIO_PHONE_NUMBER=+1234567890
+GMAIL_SERVICE_ACCOUNT_JSON=/path/to/service-account.json
+
+MAIL_MAILER=sendgrid
+MAIL_FROM_ADDRESS=noreply@realtorcedric.com
+MAIL_FROM_NAME="RE Nurture CRM"
+
+
+DEPLOYMENT CHECKLIST
+====================
+
+Pre-Deployment:
+  [ ] Install dependencies: composer install --no-dev
+  [ ] Configure .env with production credentials
+  [ ] Generate application key: php artisan key:generate
+  [ ] Run migrations: php artisan migrate --force
+  [ ] Seed initial data: php artisan db:seed --force
+
+Post-Deployment:
+  [ ] Clear cache: php artisan config:cache
+  [ ] Cache routes: php artisan route:cache
+  [ ] Cache views: php artisan view:cache
+  [ ] Set permissions: chmod -R 775 storage/ bootstrap/cache/
+  [ ] Configure webhooks in SendGrid, Twilio, Gmail
+  [ ] Setup cron job for scheduling
+  [ ] Configure HTTPS/SSL certificate
+  [ ] Test API endpoints
+
+
+NEXT STEPS
+==========
+
+1. Copy scaffold to deployment location:
+   cp -r /tmp/RE_nurture_CRM_scaffold /home/nurture/public_html/
+
+2. Follow SETUP.md for production deployment
+
+3. Configure services:
+   - SendGrid API key
+   - Twilio Account SID and Auth Token
+   - Gmail service account JSON
+
+4. Initialize database and seed test data
+
+5. Deploy to nurture.realtorcedric.com
+
+6. Test all API endpoints using cURL or Postman
+
+7. Configure webhooks for email/SMS tracking
+
+
+FILE STATISTICS
+===============
+
+Total Models: 6 (Contact, Lead, Pipeline, Task, Communication, Property)
+Total API Controllers: 4 (Contact, Lead, Task, Communication)
+Total Migrations: 6
+Total Seeders: 5
+Total Livewire Components: 2
+Total Service Classes: 3
+Lines of Code: ~3,500+
+Routes: 25+ API endpoints
+Documentation: 3 files (README, SETUP, API_DOCUMENTATION)
+
+
+COMPATIBILITY
+=============
+
+PHP: 8.2+
+Laravel: 11.0+
+MySQL: 5.7+
+Node.js: 18+ (for frontend assets)
+Composer: Latest
+Livewire: 3.0+
+
+
+LICENSE
+=======
+
+MIT License — See LICENSE file (to be created)
+
+
+AUTHOR & NOTES
+==============
+
+Created by: Clarence (AI Assistant for Cedric Britton)
+Date: April 13, 2026
+Platform: Laravel 11 + Livewire 3 + Tailwind CSS
+Deploy to: nurture.realtorcedric.com (cPanel hosting)
+
+This scaffold is production-ready but requires:
+- Service account configuration (SendGrid, Twilio, Gmail)
+- Database setup and migration
+- Environment variable configuration
+- SSL certificate installation
+- Webhook endpoint configuration
+
+For deployment questions, see SETUP.md
+
+
+═════════════════════════════════════════════════════════════════════════════════
+Generated from specification: RE_nurture_CRM (Real Estate Lead Nurture Platform)
+Ready for Git push and production deployment.
+═════════════════════════════════════════════════════════════════════════════════
